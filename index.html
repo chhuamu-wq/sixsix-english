@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FBF7F1">
+<title>六六英语 · 碎片学习</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF7F1;
+    --paper-deep:#F2ECE1;
+    --ink:#2B2A28;
+    --ink-soft:#57636B;
+    --sage:#6B8F71;
+    --sage-deep:#4F6E55;
+    --coral:#E07856;
+    --gold:#D9A441;
+    --line:#E4DCCB;
+    --card:#FFFFFF;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font-family:'Inter',-apple-system,sans-serif; height:100%; overscroll-behavior:none;}
+  body{display:flex; flex-direction:column; max-width:560px; margin:0 auto; min-height:100vh;}
+
+  .display{font-family:'Fraunces',serif;}
+
+  /* ---- Header ---- */
+  header{padding:18px 20px 14px; display:flex; align-items:center; justify-content:space-between;}
+  .brand{font-family:'Fraunces',serif; font-weight:600; font-size:20px; letter-spacing:.2px;}
+  .brand .sprout{color:var(--sage-deep);}
+  .day-pill{font-size:12px; color:var(--ink-soft); background:var(--paper-deep); border:1px solid var(--line);
+    padding:5px 10px; border-radius:20px;}
+
+  main{flex:1; display:flex; flex-direction:column; min-height:0; position:relative;}
+  .view{display:none; flex:1; min-height:0; flex-direction:column;}
+  .view.active{display:flex;}
+
+  /* ---- Today / Card stack view ---- */
+  .stack-head{padding:2px 20px 10px; display:flex; align-items:baseline; justify-content:space-between;}
+  .stack-title{font-family:'Fraunces',serif; font-size:22px; font-weight:600;}
+  .stack-sub{font-size:13px; color:var(--ink-soft);}
+  .progress-ring{width:34px; height:34px;}
+
+  .stack-wrap{flex:1; position:relative; padding:6px 16px 10px; min-height:0;}
+  .card-stack{position:relative; height:100%;}
+  .word-card{
+    position:absolute; inset:0; background:var(--card); border-radius:22px;
+    border:1px solid var(--line); box-shadow:0 1px 2px rgba(43,42,40,.04), 0 12px 28px rgba(43,42,40,.07);
+    display:flex; flex-direction:column; padding:26px 22px 20px;
+    transition:transform .28s cubic-bezier(.2,.8,.2,1), opacity .28s ease;
+    touch-action:pan-y;
+  }
+  .word-card .cat-tag{font-size:12px; color:var(--sage-deep); font-weight:600; letter-spacing:.4px; text-transform:uppercase;}
+  .word-card .main-word{font-family:'Fraunces',serif; font-weight:600; font-size:44px; line-height:1.08; margin:10px 0 2px; word-break:break-word;}
+  .word-card .ipa{font-size:16px; color:var(--ink-soft); font-family:'Inter',sans-serif; letter-spacing:.3px;}
+  .word-card .zh{margin-top:14px; font-size:18px; color:var(--ink); font-weight:500;}
+  .word-card .note{margin-top:8px; font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
+  .spacer{flex:1;}
+  .sound-row{display:flex; gap:10px; margin-top:14px;}
+  .sound-btn{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
+    border:1px solid var(--line); background:var(--paper); border-radius:14px; padding:10px 6px;
+    font-size:11px; color:var(--ink-soft); cursor:pointer; transition:background .15s;}
+  .sound-btn .ic{font-size:20px;}
+  .sound-btn:active{background:var(--paper-deep);}
+  .sound-btn.playing{background:var(--sage); color:#fff; border-color:var(--sage);}
+  .sound-btn.playing .ic{filter:none;}
+
+  .card-actions{display:flex; gap:10px; margin-top:14px;}
+  .act-btn{flex:1; padding:13px; border-radius:14px; text-align:center; font-weight:600; font-size:14px; cursor:pointer; border:none;}
+  .act-learned{background:var(--sage); color:#fff;}
+  .act-review{background:var(--paper-deep); color:var(--ink); border:1px solid var(--line);}
+
+  .swipe-hint{text-align:center; font-size:12px; color:var(--ink-soft); padding:8px 0 4px; opacity:.8;}
+
+  /* ---- Categories view ---- */
+  .cat-list{padding:4px 16px 90px; overflow-y:auto;}
+  .cat-section-title{font-size:13px; color:var(--ink-soft); margin:18px 6px 8px; font-weight:600; letter-spacing:.3px;}
+  .cat-row{display:flex; align-items:center; gap:14px; background:var(--card); border:1px solid var(--line);
+    border-radius:16px; padding:14px 16px; margin-bottom:10px; cursor:pointer;}
+  .cat-emoji{font-size:24px; width:34px; text-align:center;}
+  .cat-info{flex:1;}
+  .cat-name{font-weight:600; font-size:15.5px;}
+  .cat-count{font-size:12px; color:var(--ink-soft); margin-top:2px;}
+  .cat-arrow{color:var(--ink-soft); font-size:18px;}
+
+  /* ---- Quick lookup view ---- */
+  .lookup-wrap{padding:14px 18px 90px; overflow-y:auto;}
+  .search-box{display:flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--line);
+    border-radius:16px; padding:12px 14px; margin-bottom:14px;}
+  .search-box input{flex:1; border:none; outline:none; font-size:16px; background:transparent; color:var(--ink); font-family:'Inter',sans-serif;}
+  .quick-tags{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;}
+  .qtag{font-size:13px; padding:7px 13px; border-radius:20px; background:var(--paper-deep); border:1px solid var(--line); color:var(--ink-soft); cursor:pointer;}
+  .lookup-result{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 16px; margin-bottom:10px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .lr-word{font-family:'Fraunces',serif; font-weight:600; font-size:21px;}
+  .lr-ipa{font-size:13px; color:var(--ink-soft); margin-top:2px;}
+  .lr-zh{font-size:13px; color:var(--ink-soft);}
+  .lr-play{width:42px; height:42px; border-radius:50%; background:var(--coral); color:#fff; border:none;
+    display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;}
+  .empty-state{text-align:center; color:var(--ink-soft); font-size:14px; padding:40px 20px;}
+
+  /* ---- Bottom nav ---- */
+  nav.tabbar{position:sticky; bottom:0; background:rgba(251,247,241,.92); backdrop-filter:blur(8px);
+    border-top:1px solid var(--line); display:flex; padding:6px 8px calc(6px + env(safe-area-inset-bottom));}
+  .tab{flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:8px 0; color:var(--ink-soft);
+    font-size:11.5px; cursor:pointer; border-radius:12px; font-weight:500;}
+  .tab .ic{font-size:21px;}
+  .tab.active{color:var(--sage-deep);}
+
+  ::-webkit-scrollbar{display:none;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><span class="sprout">●</span> 六六英语</div>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <select id="voiceSelect" class="day-pill" style="border:1px solid var(--line); -webkit-appearance:none; appearance:none; padding-right:14px;"></select>
+  </div>
+</header>
+<div style="padding:0 20px 8px;"><div class="day-pill" id="todayPill" style="display:inline-block;">今天 · 厨房物品</div></div>
+
+<main>
+
+  <!-- TODAY / STACK VIEW -->
+  <section class="view active" id="view-today">
+    <div class="stack-head">
+      <div>
+        <div class="stack-title" id="stackCatName">厨房物品</div>
+        <div class="stack-sub" id="stackProgress">1 / 10</div>
+      </div>
+    </div>
+    <div class="stack-wrap">
+      <div class="card-stack" id="cardStack"></div>
+    </div>
+    <div class="swipe-hint">← 左滑标记需重复　｜　右滑/点击已学 →</div>
+  </section>
+
+  <!-- CATEGORIES VIEW -->
+  <section class="view" id="view-categories">
+    <div class="cat-list" id="catList"></div>
+  </section>
+
+  <!-- QUICK LOOKUP VIEW -->
+  <section class="view" id="view-lookup">
+    <div class="lookup-wrap">
+      <div class="search-box">
+        <span>🔍</span>
+        <input id="searchInput" placeholder="搜场景或单词，比如「睡前」「狗」" />
+      </div>
+      <div class="quick-tags" id="quickTags"></div>
+      <div id="lookupResults"></div>
+    </div>
+  </section>
+
+</main>
+
+<nav class="tabbar">
+  <div class="tab active" data-tab="today"><span class="ic">📇</span>今日学习</div>
+  <div class="tab" data-tab="categories"><span class="ic">🗂️</span>全部分类</div>
+  <div class="tab" data-tab="lookup"><span class="ic">⚡</span>速查</div>
+</nav>
+
+<script>
+/* ===================== DATA ===================== */
+const DATA = {
+  scenes_wake_sleep: { name:"起床 / 睡前", emoji:"🌙", group:"场景短语", items:[
+    {w:"Wake up!",ipa:"weɪk ʌp",zh:"起床啦",note:"早上拉开窗帘时说"},
+    {w:"Good morning",ipa:"ɡʊd ˈmɔːrnɪŋ",zh:"早上好",note:""},
+    {w:"Did you sleep well?",ipa:"dɪd juː sliːp wɛl",zh:"睡得好吗",note:""},
+    {w:"Time for bed",ipa:"taɪm fɔːr bed",zh:"该睡觉了",note:"睡前流程开始时说"},
+    {w:"Good night",ipa:"ɡʊd naɪt",zh:"晚安",note:""},
+    {w:"Sweet dreams",ipa:"swiːt driːmz",zh:"做个好梦",note:""},
+    {w:"Close your eyes",ipa:"kloʊz jʊər aɪz",zh:"闭上眼睛",note:""},
+    {w:"It's sleepy time",ipa:"ɪts ˈsliːpi taɪm",zh:"困了哦",note:""},
+    {w:"One more story",ipa:"wʌn mɔːr ˈstɔːri",zh:"再讲一个故事",note:"孩子常会要求"},
+    {w:"Lie down",ipa:"laɪ daʊn",zh:"躺下",note:""},
+    {w:"Hug your bear",ipa:"hʌɡ jʊər bɛr",zh:"抱抱小熊",note:"配合安抚物"},
+    {w:"Turn off the light",ipa:"tɜːrn ɒf ðə laɪt",zh:"关灯了",note:""},
+    {w:"Stretch your arms",ipa:"strɛtʃ jʊər ɑːrmz",zh:"伸伸手臂",note:"起床后"},
+    {w:"Rise and shine",ipa:"raɪz ænd ʃaɪn",zh:"起床喽",note:"轻松俏皮的叫醒语"},
+    {w:"Nap time",ipa:"næp taɪm",zh:"午睡时间",note:""},
+  ]},
+  scenes_eating: { name:"吃饭", emoji:"🍚", group:"场景短语", items:[
+    {w:"Let's eat",ipa:"lɛts iːt",zh:"我们吃饭吧",note:""},
+    {w:"More, please",ipa:"mɔːr pliːz",zh:"还要一点",note:"教孩子表达需求"},
+    {w:"All done",ipa:"ɔːl dʌn",zh:"吃完啦",note:""},
+    {w:"Yummy!",ipa:"ˈjʌmi",zh:"好吃",note:""},
+    {w:"Are you hungry?",ipa:"ɑːr juː ˈhʌŋɡri",zh:"你饿了吗",note:""},
+    {w:"Take a bite",ipa:"teɪk ə baɪt",zh:"吃一口",note:""},
+    {w:"Slow down",ipa:"sloʊ daʊn",zh:"慢一点吃",note:""},
+    {w:"Yucky",ipa:"ˈjʌki",zh:"不好吃/恶心",note:"孩子拒绝食物时可能用到"},
+    {w:"Open your mouth",ipa:"ˈoʊpən jʊər maʊθ",zh:"张嘴",note:""},
+    {w:"Chew it well",ipa:"tʃuː ɪt wɛl",zh:"嚼一嚼",note:""},
+    {w:"Are you full?",ipa:"ɑːr juː fʊl",zh:"吃饱了吗",note:""},
+    {w:"Drink your milk",ipa:"drɪŋk jʊər mɪlk",zh:"喝牛奶",note:""},
+    {w:"Use your spoon",ipa:"juːz jʊər spuːn",zh:"用勺子",note:""},
+    {w:"It's hot, blow it",ipa:"ɪts hɒt bloʊ ɪt",zh:"很热，吹一吹",note:""},
+    {w:"Wipe your mouth",ipa:"waɪp jʊər maʊθ",zh:"擦擦嘴",note:""},
+  ]},
+  scenes_dress_bath: { name:"穿衣 / 洗澡", emoji:"🛁", group:"场景短语", items:[
+    {w:"Shoes on",ipa:"ʃuːz ɒn",zh:"穿鞋子",note:""},
+    {w:"Wash your hands",ipa:"wɒʃ jʊər hændz",zh:"洗手",note:""},
+    {w:"Bath time",ipa:"bæθ taɪm",zh:"洗澡时间",note:""},
+    {w:"Arms up",ipa:"ɑːrmz ʌp",zh:"举起手来",note:"穿衣服时"},
+    {w:"All clean",ipa:"ɔːl kliːn",zh:"洗干净啦",note:""},
+    {w:"Brush your teeth",ipa:"brʌʃ jʊər tiːθ",zh:"刷牙",note:""},
+    {w:"Warm water",ipa:"wɔːrm ˈwɔːtər",zh:"温水",note:""},
+    {w:"Put your socks on",ipa:"pʊt jʊər sɒks ɒn",zh:"穿上袜子",note:""},
+    {w:"Zip it up",ipa:"zɪp ɪt ʌp",zh:"拉上拉链",note:""},
+    {w:"Dry your hair",ipa:"draɪ jʊər hɛr",zh:"吹干头发",note:""},
+    {w:"Hold still",ipa:"hoʊld stɪl",zh:"别动哦",note:"穿衣/剪指甲时"},
+    {w:"Splash splash",ipa:"splæʃ splæʃ",zh:"水花飞溅",note:"洗澡玩水时"},
+    {w:"Soap on your hands",ipa:"soʊp ɒn jʊər hændz",zh:"手上打肥皂",note:""},
+  ]},
+  scenes_out_home: { name:"出门 / 回家", emoji:"🚪", group:"场景短语", items:[
+    {w:"Let's go",ipa:"lɛts ɡoʊ",zh:"我们走吧",note:""},
+    {w:"We're home",ipa:"wɪr hoʊm",zh:"到家啦",note:""},
+    {w:"Hold my hand",ipa:"hoʊld maɪ hænd",zh:"牵着我的手",note:""},
+    {w:"Bye bye",ipa:"baɪ baɪ",zh:"再见",note:""},
+    {w:"Be careful",ipa:"biː ˈkɛrfəl",zh:"小心点",note:""},
+    {w:"Almost there",ipa:"ˈɔːlmoʊst ðɛr",zh:"快到了",note:""},
+    {w:"Watch your step",ipa:"wɒtʃ jʊər stɛp",zh:"看着脚下",note:""},
+    {w:"Get in the car",ipa:"ɡɛt ɪn ðə kɑːr",zh:"上车",note:""},
+    {w:"Wait for me",ipa:"weɪt fɔːr miː",zh:"等等我",note:""},
+    {w:"Where are we going?",ipa:"wɛr ɑːr wiː ˈɡoʊɪŋ",zh:"我们去哪里",note:""},
+    {w:"Stay close",ipa:"steɪ kloʊz",zh:"待在旁边",note:""},
+    {w:"Open the door",ipa:"ˈoʊpən ðə dɔːr",zh:"开门",note:""},
+  ]},
+  scenes_comfort: { name:"情绪安抚", emoji:"🫂", group:"场景短语", items:[
+    {w:"It's okay",ipa:"ɪts oʊˈkeɪ",zh:"没关系",note:""},
+    {w:"I'm here",ipa:"aɪm hɪr",zh:"我在这里",note:""},
+    {w:"Big hug",ipa:"bɪɡ hʌɡ",zh:"抱一个",note:""},
+    {w:"Don't be scared",ipa:"doʊnt biː skɛrd",zh:"别怕",note:""},
+    {w:"All better now",ipa:"ɔːl ˈbɛtər naʊ",zh:"现在好了",note:"安抚摔倒/磕碰后"},
+    {w:"Take a breath",ipa:"teɪk ə brɛθ",zh:"深呼吸",note:""},
+    {w:"You're okay",ipa:"jʊr oʊˈkeɪ",zh:"你没事的",note:""},
+    {w:"I know, I know",ipa:"aɪ noʊ aɪ noʊ",zh:"我知道，我知道",note:"共情安抚"},
+    {w:"Let it out",ipa:"lɛt ɪt aʊt",zh:"哭出来吧",note:"允许情绪释放"},
+    {w:"It will be okay",ipa:"ɪt wɪl biː oʊˈkeɪ",zh:"会好起来的",note:""},
+    {w:"Mommy/Daddy is here",ipa:"ˈmɒmi/ˈdædi ɪz hɪr",zh:"妈妈/爸爸在这里",note:""},
+  ]},
+  animals: { name:"动物", emoji:"🐶", group:"词汇", items:[
+    {w:"dog",ipa:"dɒɡ",zh:"狗",note:"叫声：woof woof"},
+    {w:"cat",ipa:"kæt",zh:"猫",note:"叫声：meow"},
+    {w:"bird",ipa:"bɜːrd",zh:"鸟",note:""},
+    {w:"fish",ipa:"fɪʃ",zh:"鱼",note:""},
+    {w:"duck",ipa:"dʌk",zh:"鸭子",note:"叫声：quack"},
+    {w:"cow",ipa:"kaʊ",zh:"牛",note:"叫声：moo"},
+    {w:"pig",ipa:"pɪɡ",zh:"猪",note:"叫声：oink"},
+    {w:"bear",ipa:"bɛr",zh:"熊",note:""},
+    {w:"rabbit",ipa:"ˈræbɪt",zh:"兔子",note:""},
+    {w:"butterfly",ipa:"ˈbʌtərflaɪ",zh:"蝴蝶",note:""},
+    {w:"sheep",ipa:"ʃiːp",zh:"羊",note:"叫声：baa"},
+    {w:"horse",ipa:"hɔːrs",zh:"马",note:""},
+    {w:"frog",ipa:"frɒɡ",zh:"青蛙",note:"叫声：croak"},
+    {w:"elephant",ipa:"ˈɛlɪfənt",zh:"大象",note:""},
+    {w:"lion",ipa:"ˈlaɪən",zh:"狮子",note:""},
+    {w:"monkey",ipa:"ˈmʌŋki",zh:"猴子",note:""},
+    {w:"bee",ipa:"biː",zh:"蜜蜂",note:""},
+  ]},
+  kitchen: { name:"厨房物品", emoji:"🍽️", group:"词汇", items:[
+    {w:"cup",ipa:"kʌp",zh:"杯子",note:""},
+    {w:"spoon",ipa:"spuːn",zh:"勺子",note:""},
+    {w:"bowl",ipa:"boʊl",zh:"碗",note:""},
+    {w:"plate",ipa:"pleɪt",zh:"盘子",note:""},
+    {w:"water",ipa:"ˈwɔːtər",zh:"水",note:""},
+    {w:"milk",ipa:"mɪlk",zh:"牛奶",note:""},
+    {w:"fork",ipa:"fɔːrk",zh:"叉子",note:""},
+    {w:"napkin",ipa:"ˈnæpkɪn",zh:"餐巾纸",note:""},
+    {w:"bottle",ipa:"ˈbɒtəl",zh:"奶瓶/瓶子",note:""},
+    {w:"high chair",ipa:"haɪ tʃɛr",zh:"儿童餐椅",note:""},
+  ]},
+  living_bed: { name:"客厅 / 卧室", emoji:"🛋️", group:"词汇", items:[
+    {w:"ball",ipa:"bɔːl",zh:"球",note:""},
+    {w:"book",ipa:"bʊk",zh:"书",note:""},
+    {w:"chair",ipa:"tʃɛr",zh:"椅子",note:""},
+    {w:"table",ipa:"ˈteɪbəl",zh:"桌子",note:""},
+    {w:"bed",ipa:"bɛd",zh:"床",note:""},
+    {w:"pillow",ipa:"ˈpɪloʊ",zh:"枕头",note:""},
+    {w:"blanket",ipa:"ˈblæŋkɪt",zh:"毯子",note:""},
+    {w:"light",ipa:"laɪt",zh:"灯",note:""},
+    {w:"toy",ipa:"tɔɪ",zh:"玩具",note:""},
+    {w:"door",ipa:"dɔːr",zh:"门",note:""},
+    {w:"window",ipa:"ˈwɪndoʊ",zh:"窗户",note:""},
+    {w:"sofa",ipa:"ˈsoʊfə",zh:"沙发",note:""},
+    {w:"clock",ipa:"klɒk",zh:"钟",note:""},
+  ]},
+  body: { name:"身体部位", emoji:"🧍", group:"词汇", items:[
+    {w:"head",ipa:"hɛd",zh:"头",note:""},
+    {w:"eyes",ipa:"aɪz",zh:"眼睛",note:""},
+    {w:"nose",ipa:"noʊz",zh:"鼻子",note:""},
+    {w:"mouth",ipa:"maʊθ",zh:"嘴",note:""},
+    {w:"ears",ipa:"ɪrz",zh:"耳朵",note:""},
+    {w:"hands",ipa:"hændz",zh:"手",note:""},
+    {w:"feet",ipa:"fiːt",zh:"脚",note:""},
+    {w:"hair",ipa:"hɛr",zh:"头发",note:""},
+    {w:"tummy",ipa:"ˈtʌmi",zh:"肚子",note:""},
+    {w:"fingers",ipa:"ˈfɪŋɡərz",zh:"手指",note:""},
+    {w:"toes",ipa:"toʊz",zh:"脚趾",note:""},
+    {w:"teeth",ipa:"tiːθ",zh:"牙齿",note:""},
+    {w:"knee",ipa:"niː",zh:"膝盖",note:""},
+  ]},
+  food: { name:"食物", emoji:"🍎", group:"词汇", items:[
+    {w:"apple",ipa:"ˈæpəl",zh:"苹果",note:""},
+    {w:"banana",ipa:"bəˈnænə",zh:"香蕉",note:""},
+    {w:"bread",ipa:"brɛd",zh:"面包",note:""},
+    {w:"egg",ipa:"ɛɡ",zh:"鸡蛋",note:""},
+    {w:"rice",ipa:"raɪs",zh:"米饭",note:""},
+    {w:"juice",ipa:"dʒuːs",zh:"果汁",note:""},
+    {w:"cookie",ipa:"ˈkʊki",zh:"饼干",note:""},
+    {w:"noodles",ipa:"ˈnuːdəlz",zh:"面条",note:""},
+    {w:"soup",ipa:"suːp",zh:"汤",note:""},
+    {w:"cheese",ipa:"tʃiːz",zh:"奶酪",note:""},
+    {w:"orange",ipa:"ˈɒrɪndʒ",zh:"橙子",note:""},
+    {w:"grape",ipa:"ɡreɪp",zh:"葡萄",note:""},
+    {w:"watermelon",ipa:"ˈwɔːtərmɛlən",zh:"西瓜",note:""},
+  ]},
+  vehicles: { name:"交通工具", emoji:"🚗", group:"词汇", items:[
+    {w:"car",ipa:"kɑːr",zh:"汽车",note:""},
+    {w:"bus",ipa:"bʌs",zh:"公交车",note:""},
+    {w:"train",ipa:"treɪn",zh:"火车",note:""},
+    {w:"bike",ipa:"baɪk",zh:"自行车",note:""},
+    {w:"plane",ipa:"pleɪn",zh:"飞机",note:""},
+    {w:"boat",ipa:"boʊt",zh:"船",note:""},
+    {w:"truck",ipa:"trʌk",zh:"卡车",note:""},
+    {w:"motorcycle",ipa:"ˈmoʊtərsaɪkəl",zh:"摩托车",note:""},
+  ]},
+  adjectives: { name:"形容词 / 状态", emoji:"🌡️", group:"词汇", items:[
+    {w:"big",ipa:"bɪɡ",zh:"大",note:""},
+    {w:"small",ipa:"smɔːl",zh:"小",note:""},
+    {w:"hot",ipa:"hɒt",zh:"热",note:""},
+    {w:"cold",ipa:"koʊld",zh:"冷",note:""},
+    {w:"happy",ipa:"ˈhæpi",zh:"开心",note:""},
+    {w:"sad",ipa:"sæd",zh:"难过",note:""},
+    {w:"clean",ipa:"kliːn",zh:"干净",note:""},
+    {w:"dirty",ipa:"ˈdɜːrti",zh:"脏",note:""},
+    {w:"wet",ipa:"wɛt",zh:"湿",note:""},
+    {w:"dry",ipa:"draɪ",zh:"干",note:""},
+    {w:"tired",ipa:"taɪərd",zh:"累",note:""},
+    {w:"loud",ipa:"laʊd",zh:"吵/大声",note:""},
+    {w:"soft",ipa:"sɒft",zh:"软的",note:""},
+  ]},
+  manners: { name:"礼貌社交", emoji:"🙏", group:"场景短语", items:[
+    {w:"Please",ipa:"pliːz",zh:"请",note:""},
+    {w:"Thank you",ipa:"θæŋk juː",zh:"谢谢",note:""},
+    {w:"You're welcome",ipa:"jʊr ˈwɛlkəm",zh:"不客气",note:""},
+    {w:"Sorry",ipa:"ˈsɒri",zh:"对不起",note:""},
+    {w:"Excuse me",ipa:"ɪkˈskjuːz miː",zh:"不好意思/借过",note:""},
+    {w:"May I?",ipa:"meɪ aɪ",zh:"我可以吗",note:"教孩子请求许可"},
+    {w:"Nice to meet you",ipa:"naɪs tuː miːt juː",zh:"很高兴认识你",note:""},
+    {w:"Good job saying that",ipa:"ɡʊd dʒɒb ˈseɪɪŋ ðæt",zh:"这样说真棒",note:"孩子主动说礼貌用语后表扬"},
+    {w:"Say hi",ipa:"seɪ haɪ",zh:"打个招呼",note:""},
+    {w:"Say bye",ipa:"seɪ baɪ",zh:"说再见",note:""},
+  ]},
+  instructions: { name:"简单指令", emoji:"👉", group:"场景短语", items:[
+    {w:"Give me",ipa:"ɡɪv miː",zh:"给我",note:""},
+    {w:"Come here",ipa:"kʌm hɪr",zh:"过来",note:""},
+    {w:"Sit down",ipa:"sɪt daʊn",zh:"坐下",note:""},
+    {w:"Stand up",ipa:"stænd ʌp",zh:"站起来",note:""},
+    {w:"Stop",ipa:"stɒp",zh:"停",note:""},
+    {w:"Wait",ipa:"weɪt",zh:"等一下",note:""},
+    {w:"Look",ipa:"lʊk",zh:"看",note:""},
+    {w:"Listen",ipa:"ˈlɪsən",zh:"听",note:""},
+    {w:"Put it here",ipa:"pʊt ɪt hɪr",zh:"放这里",note:""},
+    {w:"Pick it up",ipa:"pɪk ɪt ʌp",zh:"捡起来",note:""},
+    {w:"Follow me",ipa:"ˈfɒloʊ miː",zh:"跟着我",note:""},
+    {w:"Let's clean up",ipa:"lɛts kliːn ʌp",zh:"我们来收拾",note:""},
+  ]},
+  encouragement: { name:"鼓励 / 表扬", emoji:"🌟", group:"场景短语", items:[
+    {w:"Good job",ipa:"ɡʊd dʒɒb",zh:"做得好",note:""},
+    {w:"Well done",ipa:"wɛl dʌn",zh:"真棒",note:""},
+    {w:"You did it!",ipa:"juː dɪd ɪt",zh:"你做到了",note:""},
+    {w:"Try again",ipa:"traɪ əˈɡɛn",zh:"再试一次",note:""},
+    {w:"You're so close",ipa:"jʊr soʊ kloʊs",zh:"就快成功了",note:""},
+    {w:"I'm proud of you",ipa:"aɪm praʊd ɒv juː",zh:"我为你骄傲",note:""},
+    {w:"You can do it",ipa:"juː kæn duː ɪt",zh:"你可以的",note:""},
+    {w:"Nice try",ipa:"naɪs traɪ",zh:"尝试得不错",note:"失败时鼓励"},
+    {w:"That's amazing",ipa:"ðæts əˈmeɪzɪŋ",zh:"太厉害了",note:""},
+    {w:"Keep going",ipa:"kiːp ˈɡoʊɪŋ",zh:"继续加油",note:""},
+  ]},
+  colors: { name:"颜色", emoji:"🎨", group:"词汇", items:[
+    {w:"red",ipa:"rɛd",zh:"红色",note:""},
+    {w:"blue",ipa:"bluː",zh:"蓝色",note:""},
+    {w:"yellow",ipa:"ˈjɛloʊ",zh:"黄色",note:""},
+    {w:"green",ipa:"ɡriːn",zh:"绿色",note:""},
+    {w:"black",ipa:"blæk",zh:"黑色",note:""},
+    {w:"white",ipa:"waɪt",zh:"白色",note:""},
+    {w:"orange",ipa:"ˈɒrɪndʒ",zh:"橙色",note:""},
+    {w:"pink",ipa:"pɪŋk",zh:"粉色",note:""},
+    {w:"purple",ipa:"ˈpɜːrpəl",zh:"紫色",note:""},
+    {w:"brown",ipa:"braʊn",zh:"棕色",note:""},
+  ]},
+  numbers: { name:"数字 1-10", emoji:"🔢", group:"词汇", items:[
+    {w:"one",ipa:"wʌn",zh:"一",note:""},
+    {w:"two",ipa:"tuː",zh:"二",note:""},
+    {w:"three",ipa:"θriː",zh:"三",note:""},
+    {w:"four",ipa:"fɔːr",zh:"四",note:""},
+    {w:"five",ipa:"faɪv",zh:"五",note:""},
+    {w:"six",ipa:"sɪks",zh:"六",note:""},
+    {w:"seven",ipa:"ˈsɛvən",zh:"七",note:""},
+    {w:"eight",ipa:"eɪt",zh:"八",note:""},
+    {w:"nine",ipa:"naɪn",zh:"九",note:""},
+    {w:"ten",ipa:"tɛn",zh:"十",note:""},
+  ]},
+  shapes: { name:"形状", emoji:"🔺", group:"词汇", items:[
+    {w:"circle",ipa:"ˈsɜːrkəl",zh:"圆形",note:""},
+    {w:"square",ipa:"skwɛr",zh:"正方形",note:""},
+    {w:"triangle",ipa:"ˈtraɪæŋɡəl",zh:"三角形",note:""},
+    {w:"star",ipa:"stɑːr",zh:"星形",note:""},
+    {w:"heart",ipa:"hɑːrt",zh:"心形",note:""},
+  ]},
+  safety: { name:"安全警示", emoji:"⚠️", group:"场景短语", items:[
+    {w:"Hot! Don't touch",ipa:"hɒt doʊnt tʌtʃ",zh:"很烫，别碰",note:""},
+    {w:"No",ipa:"noʊ",zh:"不行",note:"语气坚定但简短"},
+    {w:"Stop right there",ipa:"stɒp raɪt ðɛr",zh:"原地站住",note:"紧急情况用"},
+    {w:"Be careful",ipa:"biː ˈkɛrfəl",zh:"小心点",note:""},
+    {w:"That's dangerous",ipa:"ðæts ˈdeɪndʒərəs",zh:"那很危险",note:""},
+    {w:"Don't run",ipa:"doʊnt rʌn",zh:"别跑",note:""},
+    {w:"Stay away",ipa:"steɪ əˈweɪ",zh:"离远一点",note:""},
+    {w:"Look both ways",ipa:"lʊk boʊθ weɪz",zh:"看两边",note:"过马路时"},
+  ]},
+  sharing_play: { name:"分享 / 玩耍", emoji:"🤝", group:"场景短语", items:[
+    {w:"Your turn",ipa:"jʊr tɜːrn",zh:"轮到你了",note:""},
+    {w:"My turn",ipa:"maɪ tɜːrn",zh:"轮到我了",note:""},
+    {w:"Let's share",ipa:"lɛts ʃɛr",zh:"我们分享一下",note:""},
+    {w:"Let's play",ipa:"lɛts pleɪ",zh:"我们玩吧",note:""},
+    {w:"Can I play too?",ipa:"kæn aɪ pleɪ tuː",zh:"我也能一起玩吗",note:""},
+    {w:"All by yourself",ipa:"ɔːl baɪ jʊrˈsɛlf",zh:"你自己做到的",note:"鼓励独立"},
+    {w:"Take turns",ipa:"teɪk tɜːrnz",zh:"轮流来",note:""},
+    {w:"That's mine",ipa:"ðæts maɪn",zh:"这是我的",note:""},
+  ]},
+  sentence_patterns: { name:"句型组合（替换练习）", emoji:"🧩", group:"句型", items:[
+    {w:"Do you eat meat?",ipa:"duː juː iːt miːt",zh:"你吃肉吗",note:"句型：Do you eat ___? 可替换：apples / rice / eggs"},
+    {w:"Do you eat apples?",ipa:"duː juː iːt ˈæpəlz",zh:"你吃苹果吗",note:"同上句型替换示范"},
+    {w:"Do you like dogs?",ipa:"duː juː laɪk dɒɡz",zh:"你喜欢狗吗",note:"句型：Do you like ___? 可替换：cats / cars / books"},
+    {w:"Where is your ball?",ipa:"wɛr ɪz jʊr bɔːl",zh:"你的球在哪",note:"句型：Where is your ___? 可替换：book / cup / shoe"},
+    {w:"Can you see the cat?",ipa:"kæn juː siː ðə kæt",zh:"你能看到猫吗",note:"句型：Can you see the ___? 可替换：bird / car / star"},
+    {w:"I want some water",ipa:"aɪ wɒnt sʌm ˈwɔːtər",zh:"我想要点水",note:"句型：I want some ___. 可替换：milk / juice / rice"},
+    {w:"Is this your book?",ipa:"ɪz ðɪs jʊr bʊk",zh:"这是你的书吗",note:"句型：Is this your ___? 可替换：toy / cup / shoe"},
+    {w:"What color is this?",ipa:"wɒt ˈkʌlər ɪz ðɪs",zh:"这是什么颜色",note:"配合颜色词汇问答练习"},
+    {w:"How many apples?",ipa:"haʊ ˈmɛni ˈæpəlz",zh:"有几个苹果",note:"句型：How many ___? 配合数字词汇练习"},
+    {w:"It's time to eat",ipa:"ɪts taɪm tuː iːt",zh:"该吃饭了",note:"句型：It's time to ___. 可替换：sleep / go / play"},
+  ]},
+  actions: { name:"动作词", emoji:"🏃", group:"词汇", items:[
+    {w:"run",ipa:"rʌn",zh:"跑",note:""},
+    {w:"jump",ipa:"dʒʌmp",zh:"跳",note:""},
+    {w:"sleep",ipa:"sliːp",zh:"睡",note:""},
+    {w:"eat",ipa:"iːt",zh:"吃",note:""},
+    {w:"drink",ipa:"drɪŋk",zh:"喝",note:""},
+    {w:"walk",ipa:"wɔːk",zh:"走",note:""},
+    {w:"sit",ipa:"sɪt",zh:"坐",note:""},
+    {w:"stand",ipa:"stænd",zh:"站",note:""},
+    {w:"climb",ipa:"klaɪm",zh:"爬",note:""},
+    {w:"throw",ipa:"θroʊ",zh:"扔",note:""},
+    {w:"catch",ipa:"kætʃ",zh:"接住",note:""},
+    {w:"clap",ipa:"klæp",zh:"拍手",note:""},
+    {w:"dance",ipa:"dæns",zh:"跳舞",note:""},
+    {w:"hug",ipa:"hʌɡ",zh:"拥抱",note:""},
+    {w:"point",ipa:"pɔɪnt",zh:"指",note:""},
+  ]},
+};
+
+const CAT_ORDER = ["scenes_wake_sleep","scenes_eating","scenes_dress_bath","scenes_out_home","scenes_comfort",
+  "manners","instructions","encouragement","safety","sharing_play",
+  "animals","kitchen","living_bed","body","food","vehicles","adjectives","actions","colors","numbers","shapes",
+  "sentence_patterns"];
+
+/* ===================== STATE ===================== */
+const STORE_KEY = "sixsix_en_v1";
+function loadStore(){
+  try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {learned:{}, review:{}, lastCat:null}; }
+  catch(e){ return {learned:{}, review:{}, lastCat:null}; }
+}
+function saveStore(){ localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
+let store = loadStore();
+
+function pickTodayCat(){
+  if(store.lastCat && CAT_ORDER.includes(store.lastCat)){
+    // rotate to next category each "today" session start (simple daily-ish rotation)
+    const today = new Date().toDateString();
+    if(store.lastDay === today) return store.lastCat;
+    let idx = CAT_ORDER.indexOf(store.lastCat);
+    let next = CAT_ORDER[(idx+1) % CAT_ORDER.length];
+    store.lastCat = next; store.lastDay = today; saveStore();
+    return next;
+  }
+  store.lastCat = CAT_ORDER[0]; store.lastDay = new Date().toDateString(); saveStore();
+  return store.lastCat;
+}
+
+/* ===================== SPEECH ===================== */
+let voices = [];
+let selectedVoiceName = localStorage.getItem('sixsix_voice') || null;
+
+function loadVoices(){
+  voices = speechSynthesis.getVoices().filter(v=> v.lang && v.lang.startsWith('en'));
+  populateVoiceSelect();
+}
+speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+function populateVoiceSelect(){
+  const sel = document.getElementById('voiceSelect');
+  if(!voices.length) return;
+  // Prefer named premium voices if present
+  const preferredNames = ['Samantha','Daniel','Ava'];
+  const sorted = [...voices].sort((a,b)=>{
+    const ap = preferredNames.findIndex(n=>a.name.includes(n));
+    const bp = preferredNames.findIndex(n=>b.name.includes(n));
+    const aScore = ap === -1 ? 99 : ap;
+    const bScore = bp === -1 ? 99 : bp;
+    return aScore - bScore;
+  });
+  sel.innerHTML = '';
+  sorted.forEach(v=>{
+    const opt = document.createElement('option');
+    opt.value = v.name;
+    opt.textContent = v.name.replace(/\s*\(.*?\)\s*/g,'') + (v.lang ? ' · '+v.lang.replace('en-','') : '');
+    sel.appendChild(opt);
+  });
+  if(selectedVoiceName && sorted.find(v=>v.name === selectedVoiceName)){
+    sel.value = selectedVoiceName;
+  } else if(sorted.length){
+    selectedVoiceName = sorted[0].name;
+    sel.value = selectedVoiceName;
+  }
+  sel.onchange = ()=>{
+    selectedVoiceName = sel.value;
+    localStorage.setItem('sixsix_voice', selectedVoiceName);
+  };
+}
+
+function pickEnVoice(){
+  return voices.find(v=>v.name === selectedVoiceName) ||
+         voices.find(v=>v.lang && /en-US|en-GB/.test(v.lang)) ||
+         voices[0];
+}
+
+function speak(text, mode, btnEl){
+  speechSynthesis.cancel();
+  let toSpeak = text.replace(/[!?,]/g,'');
+  let rate = 1.0;
+  if(mode === 'slow') rate = 0.55;
+  if(mode === 'spell'){
+    // letter-by-letter then whole word, only meaningful for single words
+    const clean = text.replace(/[^a-zA-Z]/g,'');
+    toSpeak = clean.split('').join('. ') + '.  ' + clean;
+    rate = 0.7;
+  }
+  const utter = new SpeechSynthesisUtterance(toSpeak);
+  utter.lang = 'en-US';
+  utter.rate = rate;
+  const v = pickEnVoice();
+  if(v) utter.voice = v;
+  if(btnEl){
+    btnEl.classList.add('playing');
+    utter.onend = ()=> btnEl.classList.remove('playing');
+    utter.onerror = ()=> btnEl.classList.remove('playing');
+  }
+  speechSynthesis.speak(utter);
+}
+
+/* ===================== TODAY / STACK VIEW ===================== */
+let currentCatKey = null;
+let currentIdx = 0;
+
+function renderStack(catKey){
+  currentCatKey = catKey;
+  currentIdx = 0;
+  const cat = DATA[catKey];
+  document.getElementById('stackCatName').textContent = cat.name;
+  document.getElementById('todayPill').textContent = "今天 · " + cat.name;
+  renderCardAt(currentIdx);
+}
+
+function renderCardAt(idx){
+  const cat = DATA[currentCatKey];
+  const stackEl = document.getElementById('cardStack');
+  stackEl.innerHTML = '';
+  document.getElementById('stackProgress').textContent = Math.min(idx+1, cat.items.length) + " / " + cat.items.length;
+
+  if(idx >= cat.items.length){
+    stackEl.innerHTML = `<div class="word-card" style="align-items:center;justify-content:center;text-align:center;">
+      <div style="font-size:38px;margin-bottom:10px;">🌱</div>
+      <div class="display" style="font-size:20px;font-weight:600;margin-bottom:6px;">这组学完了</div>
+      <div style="color:var(--ink-soft);font-size:13.5px;">去「全部分类」挑下一组，或明天再来</div>
+    </div>`;
+    return;
+  }
+
+  const item = cat.items[idx];
+  const itemId = currentCatKey + ':' + idx;
+  const isLearned = !!store.learned[itemId];
+  const card = document.createElement('div');
+  card.className = 'word-card';
+  card.innerHTML = `
+    <div class="cat-tag">${cat.emoji} ${cat.name}</div>
+    <div class="main-word">${item.w}</div>
+    <div class="ipa">/${item.ipa}/</div>
+    <div class="zh">${item.zh}</div>
+    ${item.note ? `<div class="note">${item.note}</div>` : ''}
+    <div class="spacer"></div>
+    <div class="sound-row">
+      <div class="sound-btn" data-mode="normal"><div class="ic">🔊</div>标准</div>
+      <div class="sound-btn" data-mode="slow"><div class="ic">🐢</div>慢速</div>
+      <div class="sound-btn" data-mode="spell"><div class="ic">🔤</div>拆音</div>
+    </div>
+    <div class="card-actions">
+      <button class="act-btn act-review">需要重复</button>
+      <button class="act-btn act-learned">${isLearned ? '已学 ✓' : '标记已学'}</button>
+    </div>
+  `;
+  card.querySelectorAll('.sound-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> speak(item.w, btn.dataset.mode, btn));
+  });
+  card.querySelector('.act-learned').addEventListener('click', ()=>{
+    store.learned[itemId] = true; saveStore();
+    goNext();
+  });
+  card.querySelector('.act-review').addEventListener('click', ()=>{
+    store.review[itemId] = true; saveStore();
+    goNext();
+  });
+
+  // swipe handling
+  let startX = 0, startY = 0, dx = 0, dragging = false;
+  card.addEventListener('touchstart', e=>{
+    startX = e.touches[0].clientX; startY = e.touches[0].clientY; dragging = true;
+  }, {passive:true});
+  card.addEventListener('touchmove', e=>{
+    if(!dragging) return;
+    dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+    if(Math.abs(dx) > Math.abs(dy)){
+      card.style.transform = `translateX(${dx}px) rotate(${dx/30}deg)`;
+      card.style.opacity = 1 - Math.min(Math.abs(dx)/400, 0.5);
+    }
+  }, {passive:true});
+  card.addEventListener('touchend', ()=>{
+    dragging = false;
+    if(dx > 90){
+      store.learned[itemId] = true; saveStore();
+      card.style.transform = `translateX(600px) rotate(20deg)`;
+      card.style.opacity = 0;
+      setTimeout(goNext, 180);
+    } else if(dx < -90){
+      store.review[itemId] = true; saveStore();
+      card.style.transform = `translateX(-600px) rotate(-20deg)`;
+      card.style.opacity = 0;
+      setTimeout(goNext, 180);
+    } else {
+      card.style.transform = ''; card.style.opacity = 1;
+    }
+    dx = 0;
+  });
+
+  stackEl.appendChild(card);
+}
+
+function goNext(){
+  currentIdx++;
+  renderCardAt(currentIdx);
+}
+
+/* ===================== CATEGORIES VIEW ===================== */
+function renderCategories(){
+  const listEl = document.getElementById('catList');
+  listEl.innerHTML = '';
+  const groups = {};
+  CAT_ORDER.forEach(key=>{
+    const c = DATA[key];
+    if(!groups[c.group]) groups[c.group] = [];
+    groups[c.group].push(key);
+  });
+  Object.keys(groups).forEach(groupName=>{
+    const h = document.createElement('div');
+    h.className = 'cat-section-title';
+    h.textContent = groupName;
+    listEl.appendChild(h);
+    groups[groupName].forEach(key=>{
+      const c = DATA[key];
+      const learnedCount = c.items.filter((_,i)=>store.learned[key+':'+i]).length;
+      const row = document.createElement('div');
+      row.className = 'cat-row';
+      row.innerHTML = `
+        <div class="cat-emoji">${c.emoji}</div>
+        <div class="cat-info">
+          <div class="cat-name">${c.name}</div>
+          <div class="cat-count">${c.items.length} 条 · 已学 ${learnedCount}</div>
+        </div>
+        <div class="cat-arrow">›</div>
+      `;
+      row.addEventListener('click', ()=>{
+        store.lastCat = key; store.lastDay = new Date().toDateString(); saveStore();
+        switchTab('today');
+        renderStack(key);
+      });
+      listEl.appendChild(row);
+    });
+  });
+}
+
+/* ===================== QUICK LOOKUP VIEW ===================== */
+const SCENE_TAGS = ["睡前","吃饭","出门","洗澡","安抚","礼貌","表扬","安全","颜色","数字","动物","食物"];
+const TAG_MAP = {
+  "睡前":"scenes_wake_sleep","吃饭":"scenes_eating","出门":"scenes_out_home",
+  "洗澡":"scenes_dress_bath","安抚":"scenes_comfort","礼貌":"manners","表扬":"encouragement",
+  "安全":"safety","颜色":"colors","数字":"numbers","动物":"animals","食物":"food"
+};
+
+function renderQuickTags(){
+  const wrap = document.getElementById('quickTags');
+  wrap.innerHTML = '';
+  SCENE_TAGS.forEach(tag=>{
+    const el = document.createElement('div');
+    el.className = 'qtag';
+    el.textContent = tag;
+    el.addEventListener('click', ()=>{
+      document.getElementById('searchInput').value = tag;
+      doSearch(tag);
+    });
+    wrap.appendChild(el);
+  });
+}
+
+function allItemsFlat(){
+  const flat = [];
+  CAT_ORDER.forEach(key=>{
+    DATA[key].items.forEach(item=> flat.push({...item, catName: DATA[key].name, catKey:key}));
+  });
+  return flat;
+}
+const FLAT_ITEMS = allItemsFlat();
+
+function doSearch(q){
+  const resultsEl = document.getElementById('lookupResults');
+  resultsEl.innerHTML = '';
+  q = q.trim().toLowerCase();
+
+  let results;
+  if(!q){
+    results = [];
+  } else if(TAG_MAP[q]){
+    results = DATA[TAG_MAP[q]].items.map(item=>({...item, catName: DATA[TAG_MAP[q]].name}));
+  } else {
+    results = FLAT_ITEMS.filter(it =>
+      it.w.toLowerCase().includes(q) || it.zh.includes(q) || it.catName.includes(q)
+    );
+  }
+
+  if(!q){
+    resultsEl.innerHTML = `<div class="empty-state">输入场景或单词，比如「睡前」「狗」「水」</div>`;
+    return;
+  }
+  if(results.length === 0){
+    resultsEl.innerHTML = `<div class="empty-state">没找到，换个词试试</div>`;
+    return;
+  }
+  results.forEach(item=>{
+    const row = document.createElement('div');
+    row.className = 'lookup-result';
+    row.innerHTML = `
+      <div>
+        <div class="lr-word">${item.w}</div>
+        <div class="lr-ipa">/${item.ipa}/ · <span class="lr-zh">${item.zh}</span></div>
+      </div>
+      <button class="lr-play">🔊</button>
+    `;
+    row.querySelector('.lr-play').addEventListener('click', (e)=> speak(item.w, 'normal', e.currentTarget));
+    resultsEl.appendChild(row);
+  });
+}
+
+document.getElementById('searchInput').addEventListener('input', e=> doSearch(e.target.value));
+
+/* ===================== TAB SWITCHING ===================== */
+function switchTab(tab){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('view-' + tab).classList.add('active');
+  document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+  if(tab === 'categories') renderCategories();
+  if(tab === 'lookup'){ renderQuickTags(); doSearch(document.getElementById('searchInput').value); }
+}
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=> switchTab(t.dataset.tab));
+});
+
+/* ===================== INIT ===================== */
+renderStack(pickTodayCat());
+</script>
+</body>
+</html>

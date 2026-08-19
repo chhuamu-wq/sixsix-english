@@ -462,9 +462,56 @@ const DATA = {
     {w:"hug",ipa:"hʌɡ",zh:"拥抱",note:""},
     {w:"point",ipa:"pɔɪnt",zh:"指",note:""},
   ]},
+  parent_point: { name:"指认 · 找东西 · 给东西", emoji:"👀", group:"爸爸优先学", items:[
+    {w:"Look! A cat.",ipa:"lʊk ə kæt",zh:"看！一只猫",note:"发现新事物时先说 Look 抓注意力"},
+    {w:"Look at the dog.",ipa:"lʊk æt ðə dɔːg",zh:"看那只狗",note:""},
+    {w:"What's this?",ipa:"wʌts ðɪs",zh:"这是什么",note:"指着物品问，等她回应或自己接答案"},
+    {w:"Where is the cat?",ipa:"wɛr ɪz ðə kæt",zh:"猫在哪里",note:"句型：Where is the ___? 可替换其他词汇"},
+    {w:"There it is!",ipa:"ðɛr ɪt ɪz",zh:"在那里",note:"她找到东西时说，带惊喜语气"},
+    {w:"I see a car.",ipa:"aɪ siː ə kɑːr",zh:"我看到一辆汽车",note:""},
+    {w:"Here is your book.",ipa:"hɪr ɪz jʊr bʊk",zh:"你的书在这里",note:""},
+    {w:"Give it to me.",ipa:"gɪv ɪt tuː miː",zh:"给我",note:""},
+    {w:"Give it to Mommy.",ipa:"gɪv ɪt tuː ˈmɑːmi",zh:"给妈妈",note:""},
+    {w:"Can you find the duck?",ipa:"kæn juː faɪnd ðə dʌk",zh:"你能找到鸭子吗",note:"句型：Can you find the ___?"},
+  ]},
+  parent_want: { name:"想要 · 还要吗", emoji:"🙋", group:"爸爸优先学", items:[
+    {w:"Do you want some water?",ipa:"duː juː wɒnt sʌm ˈwɔːtər",zh:"你要喝水吗",note:"句型：Do you want ___? 可替换 milk/juice"},
+    {w:"Do you want a banana?",ipa:"duː juː wɒnt ə bəˈnænə",zh:"你想吃香蕉吗",note:""},
+    {w:"Do you want more?",ipa:"duː juː wɒnt mɔːr",zh:"还要吗",note:""},
+    {w:"More bubbles?",ipa:"mɔːr ˈbʌbəlz",zh:"还要泡泡吗",note:"简化问法，日常更自然"},
+    {w:"Here you go.",ipa:"hɪr juː goʊ",zh:"给你",note:"递东西时说，比 Give you 更地道"},
+    {w:"All done?",ipa:"ɔːl dʌn",zh:"吃完/弄好了吗",note:"问句形式，配合 All done 手势"},
+    {w:"One more?",ipa:"wʌn mɔːr",zh:"再来一个吗",note:""},
+    {w:"No more.",ipa:"noʊ mɔːr",zh:"没有了 / 不要再来了",note:"语气平和地设界限"},
+    {w:"It's yummy.",ipa:"ɪts ˈjʌmi",zh:"好吃",note:""},
+  ]},
+  parent_action_cmd: { name:"打开 · 关上 · 等一下", emoji:"✋", group:"爸爸优先学", items:[
+    {w:"Open it.",ipa:"ˈoʊpən ɪt",zh:"打开它",note:""},
+    {w:"Close it.",ipa:"kloʊz ɪt",zh:"关上它",note:""},
+    {w:"Wait a moment.",ipa:"weɪt ə ˈmoʊmənt",zh:"等一下",note:""},
+    {w:"Let's try again.",ipa:"lɛts traɪ əˈgɛn",zh:"我们再试一次",note:""},
+  ]},
+  parent_describe: { name:"身体 · 动物 · 自然描述句", emoji:"🌤️", group:"爸爸优先学", items:[
+    {w:"Where is your nose?",ipa:"wɛr ɪz jʊr noʊz",zh:"你的鼻子在哪里",note:"句型：Where is your ___? 可换 hair/tummy"},
+    {w:"Touch your tummy.",ipa:"tʌtʃ jʊr ˈtʌmi",zh:"摸摸肚子",note:""},
+    {w:"The car is coming.",ipa:"ðə kɑːr ɪz ˈkʌmɪŋ",zh:"汽车来了",note:"句型：The ___ is ___ing."},
+    {w:"The car is going.",ipa:"ðə kɑːr ɪz ˈgoʊɪŋ",zh:"汽车开走了",note:""},
+    {w:"The dog is running.",ipa:"ðə dɔːg ɪz ˈrʌnɪŋ",zh:"狗狗在跑",note:""},
+    {w:"The duck is swimming.",ipa:"ðə dʌk ɪz ˈswɪmɪŋ",zh:"鸭子在游泳",note:""},
+    {w:"The bee is flying.",ipa:"ðə biː ɪz ˈflaɪɪŋ",zh:"蜜蜂在飞",note:""},
+    {w:"Look at the moon.",ipa:"lʊk æt ðə muːn",zh:"看月亮",note:""},
+    {w:"The sun is up.",ipa:"ðə sʌn ɪz ʌp",zh:"太阳出来了",note:""},
+  ]},
+  parent_comfort_sleep: { name:"情绪 · 晚安", emoji:"🌙", group:"爸爸优先学", items:[
+    {w:"Are you okay?",ipa:"ɑːr juː oʊˈkeɪ",zh:"你还好吗",note:""},
+    {w:"Mommy is here.",ipa:"ˈmɑːmi ɪz hɪr",zh:"妈妈在这里",note:""},
+    {w:"Daddy is here.",ipa:"ˈdædi ɪz hɪr",zh:"爸爸在这里",note:""},
+    {w:"Good night. I love you.",ipa:"gʊd naɪt aɪ lʌv juː",zh:"晚安，我爱你",note:"睡前收尾句，固定下来最好"},
+  ]},
 };
 
-const CAT_ORDER = ["scenes_wake_sleep","scenes_eating","scenes_dress_bath","scenes_out_home","scenes_comfort",
+const CAT_ORDER = ["parent_point","parent_want","parent_action_cmd","parent_describe","parent_comfort_sleep",
+  "scenes_wake_sleep","scenes_eating","scenes_dress_bath","scenes_out_home","scenes_comfort",
   "manners","instructions","encouragement","safety","sharing_play",
   "animals","kitchen","living_bed","body","food","vehicles","adjectives","actions","colors","numbers","shapes",
   "sentence_patterns"];
@@ -475,7 +522,10 @@ function loadStore(){
   try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {learned:{}, review:{}, lastCat:null}; }
   catch(e){ return {learned:{}, review:{}, lastCat:null}; }
 }
-function saveStore(){ localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
+function saveStore(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
+  catch(e){ /* 存储不可用时静默跳过 */ }
+}
 let store = loadStore();
 
 function pickTodayCat(){
@@ -494,7 +544,8 @@ function pickTodayCat(){
 
 /* ===================== SPEECH ===================== */
 let voices = [];
-let selectedVoiceName = localStorage.getItem('sixsix_voice') || null;
+let selectedVoiceName = null;
+try{ selectedVoiceName = localStorage.getItem('sixsix_voice') || null; }catch(e){}
 
 function loadVoices(){
   voices = speechSynthesis.getVoices().filter(v=> v.lang && v.lang.startsWith('en'));
@@ -530,7 +581,7 @@ function populateVoiceSelect(){
   }
   sel.onchange = ()=>{
     selectedVoiceName = sel.value;
-    localStorage.setItem('sixsix_voice', selectedVoiceName);
+    try{ localStorage.setItem('sixsix_voice', selectedVoiceName); }catch(e){}
   };
 }
 
@@ -715,8 +766,9 @@ function renderCategories(){
 }
 
 /* ===================== QUICK LOOKUP VIEW ===================== */
-const SCENE_TAGS = ["睡前","吃饭","出门","洗澡","安抚","礼貌","表扬","安全","颜色","数字","动物","食物"];
+const SCENE_TAGS = ["指认","想要","身体自然","晚安","睡前","吃饭","出门","洗澡","安抚","礼貌","表扬","安全","颜色","数字","动物","食物"];
 const TAG_MAP = {
+  "指认":"parent_point","想要":"parent_want","身体自然":"parent_describe","晚安":"parent_comfort_sleep",
   "睡前":"scenes_wake_sleep","吃饭":"scenes_eating","出门":"scenes_out_home",
   "洗澡":"scenes_dress_bath","安抚":"scenes_comfort","礼貌":"manners","表扬":"encouragement",
   "安全":"safety","颜色":"colors","数字":"numbers","动物":"animals","食物":"food"

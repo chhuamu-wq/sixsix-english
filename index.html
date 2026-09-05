@@ -508,9 +508,30 @@ const DATA = {
     {w:"Daddy is here.",ipa:"ˈdædi ɪz hɪr",zh:"爸爸在这里",note:""},
     {w:"Good night. I love you.",ipa:"gʊd naɪt aɪ lʌv juː",zh:"晚安，我爱你",note:"睡前收尾句，固定下来最好"},
   ]},
+  daily_morning: { name:"早晨：冲奶 · 起床 · 洗漱", emoji:"🌅", group:"一天流程", items:[
+    {w:"I'm making your milk.",ipa:"aɪm ˈmeɪkɪŋ jʊr mɪlk",zh:"我在给你冲奶",note:"冲奶时说，让她知道在等什么"},
+    {w:"Come and drink your milk.",ipa:"kʌm ænd drɪŋk jʊr mɪlk",zh:"过来喝奶",note:""},
+    {w:"Here's your blanket.",ipa:"hɪrz jʊr ˈblæŋkɪt",zh:"你的毯子在这里",note:"喝奶时递毯子说"},
+    {w:"All done with your milk?",ipa:"ɔːl dʌn wɪð jʊr mɪlk",zh:"奶喝完了吗",note:"句型：All done with your ___?"},
+    {w:"Let's get up.",ipa:"lɛts gɛt ʌp",zh:"我们起床吧",note:"喝完奶下床时说"},
+    {w:"Let's wash your face.",ipa:"lɛts wɒʃ jʊr feɪs",zh:"我们洗脸吧",note:""},
+    {w:"Let's get dressed.",ipa:"lɛts gɛt drɛst",zh:"我们穿衣服吧",note:""},
+  ]},
+  daily_outdoor: { name:"户外：骑车 · 挖沙 · 探索", emoji:"🚲", group:"一天流程", items:[
+    {w:"Let's ride the motorbike.",ipa:"lɛts raɪd ðə ˈmoʊtərbaɪk",zh:"我们骑摩托车吧",note:""},
+    {w:"Let's ride the bike.",ipa:"lɛts raɪd ðə baɪk",zh:"我们骑自行车吧",note:""},
+    {w:"Look, an excavator!",ipa:"lʊk ən ˈɛkskəveɪtər",zh:"看，挖掘机",note:"她感兴趣时可以多重复几次 excavator"},
+    {w:"Let's dig in the sand.",ipa:"lɛts dɪg ɪn ðə sænd",zh:"我们来挖沙吧",note:""},
+  ]},
+  daily_evening: { name:"晚间：保湿 · 睡衣 · 睡前奶", emoji:"🛁", group:"一天流程", items:[
+    {w:"Let's put on lotion.",ipa:"lɛts pʊt ɒn ˈloʊʃən",zh:"我们来擦润肤露",note:"洗完澡刷完牙后"},
+    {w:"Let's put on your pajamas.",ipa:"lɛts pʊt ɒn jʊr pəˈdʒɑːməz",zh:"我们穿睡衣吧",note:""},
+    {w:"Time for your milk.",ipa:"taɪm fɔːr jʊr mɪlk",zh:"喝奶时间到了",note:"睡前奶，接 Good night. I love you."},
+  ]},
 };
 
 const CAT_ORDER = ["parent_point","parent_want","parent_action_cmd","parent_describe","parent_comfort_sleep",
+  "daily_morning","daily_outdoor","daily_evening",
   "scenes_wake_sleep","scenes_eating","scenes_dress_bath","scenes_out_home","scenes_comfort",
   "manners","instructions","encouragement","safety","sharing_play",
   "animals","kitchen","living_bed","body","food","vehicles","adjectives","actions","colors","numbers","shapes",
@@ -766,9 +787,10 @@ function renderCategories(){
 }
 
 /* ===================== QUICK LOOKUP VIEW ===================== */
-const SCENE_TAGS = ["指认","想要","身体自然","晚安","睡前","吃饭","出门","洗澡","安抚","礼貌","表扬","安全","颜色","数字","动物","食物"];
+const SCENE_TAGS = ["指认","想要","身体自然","晚安","冲奶","骑车","挖沙","保湿","睡前","吃饭","出门","洗澡","安抚","礼貌","表扬","安全","颜色","数字","动物","食物"];
 const TAG_MAP = {
   "指认":"parent_point","想要":"parent_want","身体自然":"parent_describe","晚安":"parent_comfort_sleep",
+  "冲奶":"daily_morning","骑车":"daily_outdoor","挖沙":"daily_outdoor","保湿":"daily_evening",
   "睡前":"scenes_wake_sleep","吃饭":"scenes_eating","出门":"scenes_out_home",
   "洗澡":"scenes_dress_bath","安抚":"scenes_comfort","礼貌":"manners","表扬":"encouragement",
   "安全":"safety","颜色":"colors","数字":"numbers","动物":"animals","食物":"food"

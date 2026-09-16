@@ -156,12 +156,18 @@
     </div>
   </section>
 
+  <!-- PHONICS VIEW -->
+  <section class="view" id="view-phonics">
+    <div class="lookup-wrap" id="phonicsWrap"></div>
+  </section>
+
 </main>
 
 <nav class="tabbar">
   <div class="tab active" data-tab="today"><span class="ic">📇</span>今日学习</div>
   <div class="tab" data-tab="categories"><span class="ic">🗂️</span>全部分类</div>
   <div class="tab" data-tab="lookup"><span class="ic">⚡</span>速查</div>
+  <div class="tab" data-tab="phonics"><span class="ic">🔤</span>音标</div>
 </nav>
 
 <script>
@@ -530,6 +536,67 @@ const DATA = {
   ]},
 };
 
+/* ===================== PHONICS (美式音标 41个) ===================== */
+const PHONICS = [
+  { group:"单元音", items:[
+    {sym:"iː", word:"see", examples:"see, tea, meat", tip:"长音，嘴角向两边拉开，像笑着说\"衣\""},
+    {sym:"ɪ", word:"sit", examples:"sit, big, city", tip:"短促放松，比 /iː/ 位置更低更松"},
+    {sym:"ɛ", word:"bed", examples:"bed, ten, head", tip:"嘴半开，短音，像\"埃\"的前半段"},
+    {sym:"æ", word:"cat", examples:"cat, bad, apple", tip:"嘴张得更大更扁，\"哎\"和\"啊\"之间"},
+    {sym:"ɑː", word:"car", examples:"car, hot, father", tip:"长音，嘴大开，舌头后缩（美式 hot 和 car 是同一个音）"},
+    {sym:"ɔː", word:"dog", examples:"dog, tall, door", tip:"嘴唇收圆突出，长音，像\"哦\""},
+    {sym:"ʊ", word:"book", examples:"book, good, put", tip:"短促圆唇，不要拖长"},
+    {sym:"uː", word:"food", examples:"food, blue, two", tip:"长音，双唇收得很圆很小"},
+    {sym:"ʌ", word:"cup", examples:"cup, bus, love", tip:"短促，嘴微开不圆唇，像很轻的\"啊\""},
+    {sym:"ə", word:"about", examples:"about, sofa, banana", tip:"弱读专用音，最省力，几乎不用力"},
+    {sym:"ɚ", word:"teacher", examples:"teacher, better, paper", tip:"弱读 + 卷舌，常出现在词尾"},
+    {sym:"ɝː", word:"bird", examples:"bird, girl, work", tip:"重读 + 卷舌，长音"},
+  ]},
+  { group:"双元音", items:[
+    {sym:"eɪ", word:"name", examples:"name, day, eight", tip:"前重后轻，由 e 滑向 ɪ"},
+    {sym:"aɪ", word:"my", examples:"my, five, bike", tip:"由 a 滑向 ɪ"},
+    {sym:"ɔɪ", word:"boy", examples:"boy, toy, noise", tip:"由 ɔ 滑向 ɪ"},
+    {sym:"aʊ", word:"how", examples:"how, now, mouth", tip:"由 a 滑向 ʊ"},
+    {sym:"oʊ", word:"go", examples:"go, no, home", tip:"由 o 滑向 ʊ"},
+  ]},
+  { group:"爆破音", items:[
+    {sym:"p", word:"pen", examples:"pen, apple", tip:"清音，双唇完全闭合再放开"},
+    {sym:"b", word:"bed", examples:"bed, baby", tip:"浊音，声带振动，对应清音 /p/"},
+    {sym:"t", word:"ten", examples:"ten, cat", tip:"清音，舌尖抵上齿龈"},
+    {sym:"d", word:"dog", examples:"dog, dad", tip:"浊音，对应清音 /t/"},
+    {sym:"k", word:"cat", examples:"cat, milk", tip:"清音，舌根抵软腭"},
+    {sym:"g", word:"go", examples:"go, big", tip:"浊音，对应清音 /k/"},
+  ]},
+  { group:"摩擦音", items:[
+    {sym:"f", word:"five", examples:"five, leaf", tip:"清音，上齿轻咬下唇"},
+    {sym:"v", word:"very", examples:"very, love", tip:"浊音，对应清音 /f/"},
+    {sym:"θ", word:"think", examples:"think, teeth", tip:"清音，舌尖轻抵上齿之间"},
+    {sym:"ð", word:"this", examples:"this, mother", tip:"浊音，对应清音 /θ/"},
+    {sym:"s", word:"see", examples:"see, bus", tip:"清音，气流从齿间挤出"},
+    {sym:"z", word:"zoo", examples:"zoo, nose", tip:"浊音，对应清音 /s/"},
+    {sym:"ʃ", word:"she", examples:"she, wash", tip:"清音，嘴唇突出"},
+    {sym:"ʒ", word:"pleasure", examples:"pleasure, vision", tip:"浊音，对应清音 /ʃ/，较少见"},
+    {sym:"h", word:"hat", examples:"hat, house", tip:"清音，喉部呼气，无固定浊音搭档"},
+  ]},
+  { group:"破擦音", items:[
+    {sym:"tʃ", word:"chair", examples:"chair, teach", tip:"清音，先堵后擦一次完成"},
+    {sym:"dʒ", word:"jump", examples:"jump, bridge", tip:"浊音，对应清音 /tʃ/"},
+  ]},
+  { group:"鼻音", items:[
+    {sym:"m", word:"mum", examples:"mum, milk", tip:"双唇闭合，气流从鼻腔出"},
+    {sym:"n", word:"no", examples:"no, sun", tip:"舌尖抵齿龈，气流从鼻腔出"},
+    {sym:"ŋ", word:"sing", examples:"sing, king", tip:"舌根抵软腭，气流从鼻腔出"},
+  ]},
+  { group:"流音", items:[
+    {sym:"l", word:"leg", examples:"leg, ball", tip:"舌尖顶上齿龈；词尾 ball 读\"暗l\""},
+    {sym:"r", word:"red", examples:"red, car", tip:"卷舌，舌尖不碰上颚"},
+  ]},
+  { group:"半元音", items:[
+    {sym:"w", word:"we", examples:"we, wet", tip:"双唇突出成圆形"},
+    {sym:"j", word:"yes", examples:"yes, you", tip:"舌面靠近硬腭，类似\"衣\"起音"},
+  ]},
+];
+
 const CAT_ORDER = ["parent_point","parent_want","parent_action_cmd","parent_describe","parent_comfort_sleep",
   "daily_morning","daily_outdoor","daily_evening",
   "scenes_wake_sleep","scenes_eating","scenes_dress_bath","scenes_out_home","scenes_comfort",
@@ -634,6 +701,31 @@ function speak(text, mode, btnEl){
     utter.onerror = ()=> btnEl.classList.remove('playing');
   }
   speechSynthesis.speak(utter);
+}
+
+/* ===================== PHONICS VIEW ===================== */
+function renderPhonics(){
+  const wrap = document.getElementById('phonicsWrap');
+  let html = `<div style="font-size:12.5px;color:var(--ink-soft);line-height:1.6;margin-bottom:14px;">
+    美式英语音标，共 41 个（比英式 48 个少，因为 hot/car 合并、bird 类用卷舌音代替、tr/dr 等不单列）。点🔊听例词发音。
+  </div>`;
+  PHONICS.forEach(g=>{
+    html += `<div class="cat-section-title">${g.group}（${g.items.length}）</div>`;
+    g.items.forEach(it=>{
+      html += `<div class="lookup-result">
+        <div>
+          <div class="lr-word">/${it.sym}/</div>
+          <div class="lr-ipa">${it.examples}</div>
+          <div class="lr-zh">${it.tip}</div>
+        </div>
+        <button class="lr-play" data-word="${it.word}">🔊</button>
+      </div>`;
+    });
+  });
+  wrap.innerHTML = html;
+  wrap.querySelectorAll('.lr-play').forEach(btn=>{
+    btn.addEventListener('click', (e)=> speak(btn.dataset.word, 'normal', e.currentTarget));
+  });
 }
 
 /* ===================== TODAY / STACK VIEW ===================== */
@@ -869,6 +961,7 @@ function switchTab(tab){
   document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
   if(tab === 'categories') renderCategories();
   if(tab === 'lookup'){ renderQuickTags(); doSearch(document.getElementById('searchInput').value); }
+  if(tab === 'phonics') renderPhonics();
 }
 document.querySelectorAll('.tab').forEach(t=>{
   t.addEventListener('click', ()=> switchTab(t.dataset.tab));
